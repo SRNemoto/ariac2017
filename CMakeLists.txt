@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ARIAC2017)
+project(ariac2017)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -112,8 +112,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES ARIAC2017
-#  CATKIN_DEPENDS geometry_msgs moveit_control_interface moveit_core moveit_kinematics moveit_move_group  moveit_planning_interface moveit_ros_planning osrf_gear roscpp std_msgs tf_conversions
+#  LIBRARIES ariac2017
+#  CATKIN_DEPENDS geometry_msgs moveit_control_interface moveit_core moveit_kinematics moveit_move_group moveit_planning_interface moveit_ros_planning osrf_gear roscpp std_msgs tf_conversions
 #  DEPENDS system_lib
 )
 
@@ -130,7 +130,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ARIAC2017.cpp
+#   src/${PROJECT_NAME}/ariac2017.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -141,7 +141,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/ARIAC2017_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/ariac2017_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -205,7 +205,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ARIAC2017.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_ariac2017.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
