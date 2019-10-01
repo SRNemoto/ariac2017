@@ -9,11 +9,10 @@ project(ariac2017)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
-  moveit_control_interface
   moveit_core
   moveit_kinematics
-  moveit_move_group
-  moveit_planning_interface
+  moveit_ros_move_group
+  moveit_ros_planning_interface
   moveit_ros_planning
   osrf_gear
   roscpp
@@ -113,7 +112,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ariac2017
-#  CATKIN_DEPENDS geometry_msgs moveit_control_interface moveit_core moveit_kinematics moveit_move_group moveit_planning_interface moveit_ros_planning osrf_gear roscpp std_msgs tf_conversions
+#  CATKIN_DEPENDS geometry_msgs moveit_core moveit_kinematics moveit_ros_move_group moveit_ros_planning_interface moveit_ros_planning osrf_gear roscpp std_msgs tf_conversions
 #  DEPENDS system_lib
 )
 
