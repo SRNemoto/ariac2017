@@ -17,6 +17,10 @@ void receiveOrder(osrf_gear::LogicalCameraImage &msg) {
     //int_vector.push_back(something)
 }
 
+void seeObjects(osrf_gear::LogicalCameraImage &msg) {
+    //int_vector.push_back(something)
+}
+
 int main(int argc, char** argv) {
     int_vector.clear();
 
@@ -32,8 +36,11 @@ int main(int argc, char** argv) {
     // Warning message?
     ROS_WARN("Competition service returned failure: %s", begin_comp.response.message.c_str());
 
-    // Subscriber to the logical camera
-    ros::Subscriber sub = n.subscribe("/ariac/name", 1000, receiveOrder); 
+    // Subscriber to receive orders
+    ros::Subscriber sub = n.subscribe("/ariac/arm/command", 1000, receiveOrder); 
+
+    // Subscriber to receive camera location info
+    ros::Subscriber sub = n.subscribe("/ariac/logical_camera", 1000, seeObjects); 
 
     // Transformation buffer
     tf2_ros::Buffer tfBuffer;
