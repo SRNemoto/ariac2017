@@ -4,21 +4,23 @@
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "geometry_msgs/TransformStamped.h"
 #include "osrf_gear/LogicalCameraImage.h"
+#include "osrf_gear/Order.h"
+#include "osrf_gear/Model.h"
 #include "ros/ros.h"
 #include "std_srvs/Trigger.h"
 #include <buffer.h>
 #include <vector>
 
-std::vector<std_msgs::init> int_vector;
+std::vector<std_msgs::init> order_vec;
 
 osrf_gear::LogicalCameraImage camera_msg;
 
-void receiveOrder(osrf_gear::LogicalCameraImage &msg) {
-    //int_vector.push_back(something)
+void receiveOrder(osrf_gear::Order &order) {
+    order_vec.push_back(order)
 }
 
 void seeObjects(osrf_gear::LogicalCameraImage &msg) {
-    //int_vector.push_back(something)
+    camera_msg = msg;
 }
 
 int main(int argc, char** argv) {
@@ -70,6 +72,10 @@ int main(int argc, char** argv) {
     //part_pose.pose = ;
 
     tf2::doTransform(part_pose, goal_pose, transformStamped);
+
+
+    // See the first piston part from the camera
+    Model piston_part = camera_msg.models[0];
 
     // Add height to goal pose.
     goal_pose.pose.position.z += 0.10; // 10 cm above the part
