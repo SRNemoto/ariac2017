@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 
     // Trigger the start of the competition
 
-    ros::ServiceClient begin_client = n.serviceClient<std_srvs::Trigger>("Service Name");
+    ros::ServiceClient begin_client = n.serviceClient<std_srvs::Trigger>("/ariac/start_competition");
     std_srvs::Trigger begin_comp;
     begin_client.call(begin_comp);
 
@@ -56,12 +56,16 @@ int main(int argc, char** argv) {
     // Instance of a move group for MoveIt to create motion plans
     moveit::planning_interface::MoveGroupInterface move_group("manipulator");
 
+    std::string move_group_name = move_group.getPlanningFrame().c_str();
+    ROS_INFO("Manipulator Frame: %s\n", move_group.getPlanningFrame().c_str());
+    ROS_INFO("End Effector Frame: %s\n", move_group.getEndEffectorLink().c_str());
+
     // Retrieve the transformation
     geometry_msgs::TransformStamped tfStamped;
     try {
         tfStamped = tfBuffer.lookupTransform(
-            move_group.getPlanningFrame().c_str(),
-            "/ariac/logical_camera",
+            move_group_name.substr(1, sizeof(move_group_name)),
+            "logical_camera_frame",
             ros::Time(0.0),
             ros::Duration(1.0));
         ROS_DEBUG("Transform to [%s] from [%s]", tfStamped.header.frame_id.c_str(), tfStamped.child_frame_id.c_str());
@@ -74,7 +78,7 @@ int main(int argc, char** argv) {
     geometry_msgs::PoseStamped part_pose, goal_pose;
 
     // Copy pose from the logical camera.
-    //part_pose.pose = ;
+    part_pose.pose = camera_msg.pose;
 
     tf2::doTransform(part_pose, goal_pose, tfStamped);
 
@@ -85,10 +89,10 @@ int main(int argc, char** argv) {
     goal_pose.pose.position.z += 0.10; // 10 cm above the part
 
     // Tell the end effector to rotate 90 degrees around the y-axis (in quaternions)
-    goal_pose.pose.orientation.w = 0.707;
-    goal_pose.pose.orientation.x = 0.0;
-    goal_pose.pose.orientation.y = 0.707;
-    goal_pose.pose.orientation.z = 0.0;
+    //goal_pose.pose.orientation.w = 0.707;
+    //goal_pose.pose.orientation.x = 0.0;
+    //goal_pose.pose.orientation.y = 0.707;
+    //goal_pose.pose.orientation.z = 0.0;
 
 
     // Set the desired pose for the arm in the arm controller
@@ -99,15 +103,23 @@ int main(int argc, char** argv) {
 
     // Create a plan based on teh settings (all default settings now) in the_plan.
     
-     // TODO: Check output of the plan 
-    if (move_group.plan(the_plan)) {
-        // In the event the plan was created, execute.
-        move_group.execute(the_plan);
-    }
-    
-
+    ros::AsyncSpinner spinner(4);
+    spinner.start();
 
     while(ros::ok()) {
+        ROS_INFO("Order Number: %d", order_vec.size());
+        ROS_INFO("Plan instantiated");
+         // TODO: Check output of the plan 
+        if (move_group.plan(the_plan)) {
+            ROS_INFO("Plan Successful");
+            // In the event the plan was created, execute.
+            move_group.execute(the_plan);
+        } else {
+            ROS_INFO("Plan Failed");
+        }
+
+        ros::spinOnce();
+
         if (order_vec.size() > 0) {
             // TODO 
         }
