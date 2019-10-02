@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     ROS_WARN("Competition service returned failure: %s", begin_comp.response.message.c_str());
 
     // Subscriber to receive orders
-    ros::Subscriber sub = n.subscribe("/ariac/arm/command", 1000, receiveOrder); 
+    ros::Subscriber sub = n.subscribe("/ariac/orders", 1000, receiveOrder); 
 
     // Subscriber to receive camera location info
     ros::Subscriber sub = n.subscribe("/ariac/logical_camera", 1000, seeObjects); 
