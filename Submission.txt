@@ -1,3 +1,13 @@
 Github link: https://github.com/SRNemoto/ariac2017
 Proof of Working link (video): https://photos.app.goo.gl/f4TTFxTvrtArShNu6
 
+The code works by subscribing to the topic /ariac/logical_camera for the
+poses of the piston parts and the camera. It also subscribes to the topic
+/ariac/orders to get orders. From the logical camera messages, it takes 
+the pose of the piston parts then uses tfBuffer.lookupTransform() to get 
+the transformation from the logical camera frame to the world frame.
+After that, it uses tf2::doTransform() to apply the logical camera frame
+to world transformation to the piston part's pose. Then, the move group's
+goal pose is set to the piston part's pose (in the world frame). Finally,
+the moveit planning interface is used to plan a path to the goal pose.
+Once that is completed, the program exits.
