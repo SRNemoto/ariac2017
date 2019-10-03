@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
             "logical_camera_frame",
             ros::Time(0.0),
             ros::Duration(1.0));
-        ROS_DEBUG("Transform to [%s] from [%s]", tfStamped.header.frame_id.c_str(), tfStamped.child_frame_id.c_str());
+        ROS_INFO("Transform to [%s] from [%s]", tfStamped.header.frame_id.c_str(), tfStamped.child_frame_id.c_str());
     } catch (tf2::TransformException &ex) {
         ROS_ERROR("%s", ex.what());
     }
@@ -80,19 +80,49 @@ int main(int argc, char** argv) {
     // Copy pose from the logical camera.
     part_pose.pose = camera_msg.pose;
 
-    tf2::doTransform(part_pose, goal_pose, tfStamped);
+    ROS_INFO("camera_pose x: %f", part_pose.pose.position.x);
+    ROS_INFO("camera_pose y: %f", part_pose.pose.position.y);
+    ROS_INFO("camera_pose z: %f", part_pose.pose.position.z);
+
+    //tf2::doTransform(part_pose, goal_pose, tfStamped);
+
+    ROS_INFO("goal_pose_camera x: %f", goal_pose.pose.position.x);
+    ROS_INFO("goal_pose_camera y: %f", goal_pose.pose.position.y);
+    ROS_INFO("goal_pose_camera z: %f", goal_pose.pose.position.z);
 
     // See the first piston part from the camera
     osrf_gear::Model piston_part = camera_msg.models[0];
+    part_pose.pose = piston_part.pose;
 
-    ROS_INFO("part_pose x: %f", part_pose.pose.position.x);
-    ROS_INFO("part_pose y: %f", part_pose.pose.position.y);
-    ROS_INFO("part_pose z: %f", part_pose.pose.position.z);
+    try {
+        tfStamped = tfBuffer.lookupTransform(
+            "logical_camera_frame",
+            "logical_camera_piston_rod_part_1_frame",
+            ros::Time(0.0),
+            ros::Duration(1.0));
+        ROS_INFO("Transform to [%s] from [%s]", tfStamped.header.frame_id.c_str(),  tfStamped.child_frame_id.c_str());
+    } catch (tf2::TransformException &ex) {
+        ROS_ERROR("%s", ex.what());
+    }
+
+    ROS_INFO("piston_part x: %f", piston_part.pose.position.x);
+    ROS_INFO("piston_part y: %f", piston_part.pose.position.y);
+    ROS_INFO("piston_part z: %f", piston_part.pose.position.z);
+
+    tf2::doTransform(part_pose, goal_pose, tfStamped);
+
+    ROS_INFO("goal_pose_piston x: %f", goal_pose.pose.position.x);
+    ROS_INFO("goal_pose_piston y: %f", goal_pose.pose.position.y);
+    ROS_INFO("goal_pose_piston z: %f", goal_pose.pose.position.z);
 
     // Add height to goal pose.
-    goal_pose.pose.position.x = -0.50; // 10 cm above the part
-    goal_pose.pose.position.y = 0.030; // 10 cm above the part
-    goal_pose.pose.position.z = 0.824951; // 10 cm above the part
+    goal_pose.pose.position.x = -0.50; 
+    goal_pose.pose.position.y = 0.030;
+    goal_pose.pose.position.z = 0.824951;
+    //goal_pose.pose = part_pose.pose; 
+    //goal_pose.pose.position.z -= piston_part.pose.position.x - 0.2;
+    //goal_pose.pose.position.y -= piston_part.pose.position.y;
+    //goal_pose.pose.position.x -= piston_part.pose.position.z;
 
     ROS_INFO("goal_pose x: %f", goal_pose.pose.position.x);
     ROS_INFO("goal_pose y: %f", goal_pose.pose.position.y);
@@ -125,6 +155,7 @@ int main(int argc, char** argv) {
                 ROS_INFO("Plan Successful");
                 // In the event the plan was created, execute.
                 move_group.execute(the_plan);
+                break;
             } else {
                 ROS_INFO("Plan Failed");
             }
