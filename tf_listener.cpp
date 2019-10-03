@@ -37,9 +37,11 @@ int main(int argc, char** argv) {
     std_srvs::Trigger begin_comp;
     begin_client.call(begin_comp);
 
-
-    // Warning message?
-    //ROS_WARN("Competition service returned failure: %s", begin_comp.response.message.c_str());
+    if (begin_comp.response.success) {
+        ROS_INFO("Competition has begun: %s", begin_comp.response.message.c_str());
+    } else {
+        ROS_WARN("Competition service returned failure: %s", begin_comp.response.message.c_str());
+    }
 
     // Subscriber to receive orders
     ros::Subscriber order_sub = n.subscribe("/ariac/orders", 1000, receiveOrder); 
