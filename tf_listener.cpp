@@ -140,11 +140,11 @@ int main(int argc, char** argv) {
                 ROS_INFO("Plan Successful");
                 // In the event the plan was created, execute.
                 move_group.execute(the_plan);
+                order_vec.pop_back();
                 break;
             } else {
                 ROS_INFO("Plan Failed");
             }
-            order_vec.pop_back();
             ros::spinOnce();
         }
     }
