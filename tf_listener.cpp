@@ -85,8 +85,19 @@ int main(int argc, char** argv) {
     // See the first piston part from the camera
     osrf_gear::Model piston_part = camera_msg.models[0];
 
+    ROS_INFO("part_pose x: %f", part_pose.pose.position.x);
+    ROS_INFO("part_pose y: %f", part_pose.pose.position.y);
+    ROS_INFO("part_pose z: %f", part_pose.pose.position.z);
+
     // Add height to goal pose.
-    goal_pose.pose.position.z += 0.10; // 10 cm above the part
+    goal_pose.pose.position.x = -0.50; // 10 cm above the part
+    goal_pose.pose.position.y = 0.030; // 10 cm above the part
+    goal_pose.pose.position.z = 0.824951; // 10 cm above the part
+
+    ROS_INFO("goal_pose x: %f", goal_pose.pose.position.x);
+    ROS_INFO("goal_pose y: %f", goal_pose.pose.position.y);
+    ROS_INFO("goal_pose z: %f", goal_pose.pose.position.z);
+
 
     // Tell the end effector to rotate 90 degrees around the y-axis (in quaternions)
     //goal_pose.pose.orientation.w = 0.707;
@@ -100,6 +111,7 @@ int main(int argc, char** argv) {
 
     // Instantiate and create a plan
     moveit::planning_interface::MoveGroupInterface::Plan the_plan;
+    ROS_INFO("Plan instantiated");
 
     // Create a plan based on teh settings (all default settings now) in the_plan.
     
@@ -107,21 +119,17 @@ int main(int argc, char** argv) {
     spinner.start();
 
     while(ros::ok()) {
-        ROS_INFO("Order Number: %d", order_vec.size());
-        ROS_INFO("Plan instantiated");
-         // TODO: Check output of the plan 
-        if (move_group.plan(the_plan)) {
-            ROS_INFO("Plan Successful");
-            // In the event the plan was created, execute.
-            move_group.execute(the_plan);
-        } else {
-            ROS_INFO("Plan Failed");
-        }
-
-        ros::spinOnce();
-
         if (order_vec.size() > 0) {
-            // TODO 
+            //ROS_INFO("Order Number: %d", order_vec.size());
+            if (move_group.plan(the_plan)) {
+                ROS_INFO("Plan Successful");
+                // In the event the plan was created, execute.
+                move_group.execute(the_plan);
+            } else {
+                ROS_INFO("Plan Failed");
+            }
+            order_vec.pop_back();
+            ros::spinOnce();
         }
     }
 
