@@ -9,11 +9,6 @@ add_compile_options(-std=c++11)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
-  moveit_core
-  moveit_kinematics
-  moveit_ros_move_group
-  moveit_ros_planning_interface
-  moveit_ros_planning
   osrf_gear
   roscpp
   std_msgs
@@ -156,6 +151,7 @@ add_executable(tf_listener_node tf_listener.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(tf_listener_node
     ${catkin_LIBRARIES}
+    ur10_kin
 )
 
 #############

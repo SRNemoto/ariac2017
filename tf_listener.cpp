@@ -1,5 +1,3 @@
-#include "moveit/move_group_interface/move_group_interface.h"
-#include "moveit/planning_scene_interface/planning_scene_interface.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "geometry_msgs/TransformStamped.h"
@@ -56,26 +54,26 @@ int main(int argc, char** argv) {
 
 
     // Instance of a move group for MoveIt to create motion plans
-    moveit::planning_interface::MoveGroupInterface move_group("manipulator");
+    //moveit::planning_interface::MoveGroupInterface move_group("manipulator");
 
-    std::string move_group_name = move_group.getPlanningFrame().c_str();
-    ROS_INFO("Manipulator Frame: %s\n", move_group.getPlanningFrame().c_str());
-    ROS_INFO("End Effector Frame: %s\n", move_group.getEndEffectorLink().c_str());
+    //std::string move_group_name = move_group.getPlanningFrame().c_str();
+    //ROS_INFO("Manipulator Frame: %s\n", move_group.getPlanningFrame().c_str());
+    //ROS_INFO("End Effector Frame: %s\n", move_group.getEndEffectorLink().c_str());
 
     // Retrieve the transformation
     geometry_msgs::TransformStamped tfStamped;
 
     // Transform from camera to world
-    try {
-        tfStamped = tfBuffer.lookupTransform(
-            move_group_name.substr(1, sizeof(move_group_name)),
-            "logical_camera_frame",
-            ros::Time(0.0),
-            ros::Duration(1.0));
-        ROS_INFO("Transform to [%s] from [%s]", tfStamped.header.frame_id.c_str(), tfStamped.child_frame_id.c_str());
-    } catch (tf2::TransformException &ex) {
-        ROS_ERROR("%s", ex.what());
-    }
+    // try {
+    //     tfStamped = tfBuffer.lookupTransform(
+    //         move_group_name.substr(1, sizeof(move_group_name)),
+    //         "logical_camera_frame",
+    //         ros::Time(0.0),
+    //         ros::Duration(1.0));
+    //     ROS_INFO("Transform to [%s] from [%s]", tfStamped.header.frame_id.c_str(), tfStamped.child_frame_id.c_str());
+    // } catch (tf2::TransformException &ex) {
+    //     ROS_ERROR("%s", ex.what());
+    // }
     // tf2_ross::Buffer.lookupTransform("to_frame", "from_frame", "how_recent", "how_long_to_wait");
 
     // Create Variables
@@ -122,10 +120,10 @@ int main(int argc, char** argv) {
 
 
     // Set the desired pose for the arm in the arm controller
-    move_group.setPoseTarget(goal_pose);
+    //move_group.setPoseTarget(goal_pose);
 
     // Instantiate and create a plan
-    moveit::planning_interface::MoveGroupInterface::Plan the_plan;
+    //moveit::planning_interface::MoveGroupInterface::Plan the_plan;
     ROS_INFO("Plan instantiated");
 
     // Create a plan based on teh settings (all default settings now) in the_plan.
@@ -136,15 +134,15 @@ int main(int argc, char** argv) {
     while(ros::ok()) {
         if (order_vec.size() > 0) {
             //ROS_INFO("Order Number: %d", order_vec.size());
-            if (move_group.plan(the_plan)) {
-                ROS_INFO("Plan Successful");
-                // In the event the plan was created, execute.
-                move_group.execute(the_plan);
-                order_vec.pop_back();
-                break;
-            } else {
-                ROS_INFO("Plan Failed");
-            }
+            // if (move_group.plan(the_plan)) {
+            //     ROS_INFO("Plan Successful");
+            //     // In the event the plan was created, execute.
+            //     move_group.execute(the_plan);
+            //     order_vec.pop_back();
+            //     break;
+            // } else {
+            //     ROS_INFO("Plan Failed");
+            // }
             ros::spinOnce();
         }
     }
