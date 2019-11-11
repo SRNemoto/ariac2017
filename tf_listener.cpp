@@ -7,12 +7,16 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_srvs/Trigger.h"
+#include "sensor_msgs/JointState.h"
 #include "tf2_ros/buffer.h"
+#include "ur_kinematics/ur_kin.h"
 #include <vector>
 
 std::vector<osrf_gear::Order> order_vec;
 
 osrf_gear::LogicalCameraImage camera_msg;
+
+float X_POS = 0, Y_POS = 0, Z_POS = 0;
 
 void receiveOrder(const osrf_gear::Order &order) {
     order_vec.push_back(order);
@@ -20,6 +24,12 @@ void receiveOrder(const osrf_gear::Order &order) {
 
 void seeObjects(const osrf_gear::LogicalCameraImage &msg) {
     camera_msg = msg;
+}
+
+void joinStateCallback(const sensor_msgs::JointState &msg) {
+    X_POS = msg.position[0];
+    Y_POS = msg.position[1];
+    Z_POS = msg.position[2];
 }
 
 int main(int argc, char** argv) {
@@ -47,6 +57,33 @@ int main(int argc, char** argv) {
     // Subscriber to receive camera location info
     ros::Subscriber cam_sub = n.subscribe("/ariac/logical_camera", 1000, seeObjects); 
 
+    // Subscriber to get Joint states from Gazebo
+    ros::Subscriber cam_sub = n.subscribe("/ariac/joint_states", 1000, joinStateCallback); 
+
+    // T Matrix as 1D array
+    float  way_two[4][4] = {{0.0, -1.0, 0.0, X_POS},
+                    {0.0, 0.0, 1.0, Y_POS},
+                    {-1.0, 0.0, 0.0 , Z_POS},
+                    {0.0, 0.0, 0.0, 1.0}};
+
+    // Get a forward kinematics solution given joint angles.
+    // Initial joint angles for the arm
+    float q_[] = {3.14, -1.13, 1.51, 3.77, -1.51, 0};
+    // Variable to receive forward kinematic solution
+    float T[4][4];
+    // Forward kinematic solution
+    ur_kinematics::forward(&q[0], &T[0][0]);
+    /* From a coding standpoint, the inputs into the function are the locations of the
+    beginning of the memory where the six joint angles are held (q) and the 16 entries
+    for the T matrix can be placed. */
+
+    // Allocate space for up to eight solution of six joint angles
+    float q_sols[8][6];
+    // Variable to receive the number of solutions returned
+    int num_sol;
+    // Inverse kinematic solution(s)
+    num_sol = ur_kinematics::invers(&T[0][0], &q[0][0], 0.0);
+    // The last element is the required precision of the solutions.
 
     // Transformation buffer
     tf2_ros::Buffer tfBuffer;
